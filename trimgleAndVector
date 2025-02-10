@@ -1,0 +1,109 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+struct Point {
+    double x = 0.0;
+    double y = 0.0;
+};
+
+struct Vector2D {
+    double x = 0.0;
+    double y = 0.0;
+};
+
+Point ReadPoint() {
+    Point point;
+    cin >> point.x >> point.y;
+    return point;
+}
+
+void PrintPoint(Point p) {
+    cout << "{" << p.x << ", " << p.y << "}";
+}
+
+Vector2D PointDifference(Point p1, Point p2) {
+    Vector2D vector;
+    vector.x = p1.x - p2.x;
+    vector.y = p1.y - p2.y;
+    return vector;
+}
+
+double FindLength(Vector2D v) {
+    return hypot(v.x, v.y);
+}
+
+struct Triangle {
+    Point p1;
+    Point p2;
+    Point p3;
+};
+
+Triangle ReadTriangle() {
+    Triangle tr;
+    tr.p1 = ReadPoint();
+    tr.p2 = ReadPoint();
+    tr.p3 = ReadPoint();
+    return tr;
+}
+
+double FindPerimeter(const Triangle& t) {
+    double per = 0;
+    per += FindLength(PointDifference(t.p1, t.p2));
+    per += FindLength(PointDifference(t.p2, t.p3));
+    per += FindLength(PointDifference(t.p3, t.p1));
+    return per;
+}
+
+void MovePoint(Point& p, Vector2D v) {
+    p.x += v.x;
+    p.y += v.y;
+}
+
+void MoveTriangle(Triangle& t, Vector2D v) {
+    MovePoint(t.p1, v);
+    MovePoint(t.p2, v);
+    MovePoint(t.p3, v);
+}
+
+Point GetCenter(const Triangle& t) {
+    Point kip;
+    kip.x = (t.p1.x + t.p2.x + t.p3.x) / 3;
+    kip.y = (t.p1.y + t.p2.y + t.p3.y) / 3;  // Исправлено: t.p3.y вместо t.p3.x
+    return kip;
+}
+
+void PrintTriangle(const Triangle& t) {
+    cout << "{{" << t.p1.x << ", " << t.p1.y << "}, {" 
+         << t.p2.x << ", " << t.p2.y << "}, {" 
+         << t.p3.x << ", " << t.p3.y << "}}" << endl;
+}
+
+void PrintVector(Vector2D p) {
+    std::cout << "("s << p.x << ", "s << p.y << ")"s;
+}
+
+int main() {
+    Triangle t = ReadTriangle();
+
+    // Исходный центр треугольника.
+    Point origin = GetCenter(t);
+
+    // Читаем желаемый центр треугольника.
+    Point center = ReadPoint();
+
+    // Находим смещение центра треугольника.
+    Vector2D offset = PointDifference(center, origin);
+
+    std::cout << "Исходный центр: ";
+    PrintPoint(origin);
+    std::cout << std::endl;
+
+    std::cout << "Смещение: ";
+    PrintVector(offset);
+    std::cout << std::endl;
+    
+    MoveTriangle(t, offset);
+    PrintTriangle(t);
+    std::cout << std::endl;
+}
